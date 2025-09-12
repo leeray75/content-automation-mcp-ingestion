@@ -121,16 +121,60 @@ TRANSPORT=http PORT=3001 npm start
 ```
 
 ### Docker
+
+#### Using npm scripts (recommended)
 ```bash
-docker build -t content-automation-mcp-ingestion .
-docker run -e TRANSPORT=http -e PORT=3001 -p 3001:3001 content-automation-mcp-ingestion
+# Build Docker image
+npm run docker:build
+
+# Run container in HTTP mode (detached)
+npm run docker:run:http
+
+# Check container logs
+npm run docker:logs
+
+# Stop and remove container
+npm run docker:stop
+
+# Run container in STDIO mode (interactive)
+npm run docker:run
+
+# Connect MCP Inspector to Docker container
+npm run docker:inspect
 ```
 
-### MCP Inspector
+#### Manual Docker commands
 ```bash
-npm run inspector:dev    # dev mode
-npm run inspector:http   # HTTP mode
-npm run inspector:cli    # built CLI mode
+# Build image
+docker build -t content-automation-mcp-ingestion .
+
+# Run HTTP mode (detached)
+docker run --rm -d --name content-ingestion-http \
+  -e TRANSPORT=http -e PORT=3001 -p 3001:3001 \
+  content-automation-mcp-ingestion
+
+# Run STDIO mode (interactive)
+docker run --rm -it --name content-ingestion \
+  -e TRANSPORT=stdio \
+  content-automation-mcp-ingestion
+
+# Check logs
+docker logs content-ingestion-http
+
+# Stop container
+docker stop content-ingestion-http
+```
+
+### MCP Inspector Testing
+```bash
+# Development mode (stdio, live reload)
+npm run inspector:dev
+
+# Built CLI mode (stdio, compiled)
+npm run build && npm run inspector:cli
+
+# HTTP mode (for Docker testing)
+npm run inspector:http
 ```
 
 ## 3. File/Directory Naming Conventions
@@ -283,18 +327,89 @@ LOG_LEVEL=debug
 
 ## 8. Testing Instructions
 
-### Unit Tests
+### MCP Inspector Testing (Acceptance Criteria)
+
+#### A. Local STDIO Testing (Development Mode)
 ```bash
-npm test
-npm run test:coverage
+# Terminal 1: Start development server
+npm run dev
+
+# Terminal 2: Connect MCP Inspector
+npm run inspector:dev
 ```
 
-### Manual Testing
+**Expected Results:**
+- Inspector UI opens in browser
+- Connection status shows "Connected"
+- Tools section lists: `ingest_content`, `get_ingestion_stats`
+- Resources section lists: `ingestion_status`, `ingestion_records`
+
+**Test Tool Invocation:**
+1. Click on `ingest_content` tool
+2. Use this sample payload:
+```json
+{
+  "content": {
+    "headline": "Test Article via Inspector",
+    "body": "This is a test article submitted through MCP Inspector.",
+    "author": "Inspector User",
+    "publishDate": "2025-01-01",
+    "tags": ["inspector", "test"]
+  },
+  "contentType": "article"
+}
+```
+3. Expected response: JSON with `status: "completed"` and generated ID
+
+#### B. Built CLI Testing (Production Mode)
+```bash
+# Build the project
+npm run build
+
+# Terminal 1: Start built server
+npm start
+
+# Terminal 2: Connect Inspector to built server
+npm run inspector:cli
+```
+
+**Expected Results:**
+- Same as development mode but using compiled JavaScript
+- Faster startup time
+- Production logging format
+
+#### C. Docker HTTP Testing
+```bash
+# Build Docker image
+docker build -t content-automation-mcp-ingestion .
+
+# Terminal 1: Start Docker container
+docker run --rm -p 3001:3001 -e TRANSPORT=http -e PORT=3001 content-automation-mcp-ingestion
+
+# Terminal 2: Verify health endpoint
+curl http://localhost:3001/health
+
+# Terminal 3: Connect Inspector via HTTP
+npm run inspector:http
+```
+
+**Expected Results:**
+- Health endpoint returns status "healthy"
+- Inspector connects via HTTP/SSE transport
+- All tools and resources available
+- Container logs show MCP connection events
+
+**Test Docker Tool Invocation:**
+1. Use same `ingest_content` payload as above
+2. Verify response in Inspector
+3. Check container logs for ingestion events
+
+#### D. Manual HTTP API Testing
 ```bash
 # Test health endpoint
 curl http://localhost:3001/health
 
-# Test content ingestion
+# Test direct content ingestion
 curl -X POST http://localhost:3001/ingest \
   -H "Content-Type: application/json" \
   -d '{
@@ -306,7 +421,43 @@ curl -X POST http://localhost:3001/ingest \
       "tags": ["test"]
     }
   }'
+
+# Test MCP metadata endpoint
+curl http://localhost:3001/mcp
 ```
+
+### Unit Tests
+```bash
+npm test
+npm run test:coverage
+```
+
+### Integration Testing Checklist
+
+**✅ Acceptance Criteria Verification:**
+- [ ] `npm run inspector:dev` connects and lists tools
+- [ ] `npm run inspector:cli` connects to built server
+- [ ] Docker HTTP mode allows Inspector connection
+- [ ] `ingest_content` tool accepts sample payload and returns success
+- [ ] `get_ingestion_stats` tool returns service statistics
+- [ ] Health endpoint responds with service status
+- [ ] All three transport modes work (dev stdio, built stdio, Docker HTTP)
+
+**🔧 Troubleshooting Steps:**
+1. If Inspector fails to connect:
+   - Check server logs for connection errors
+   - Verify correct transport mode (stdio vs http)
+   - Ensure port 3001 is not in use by another process
+
+2. If tools don't appear:
+   - Check handler registration in `mcp-server.ts`
+   - Verify tool definitions in `tool-handlers.ts`
+   - Review MCP SDK version compatibility
+
+3. If Docker connection fails:
+   - Confirm container is running: `docker ps`
+   - Check port mapping: `-p 3001:3001`
+   - Verify TRANSPORT=http environment variable
 
 ## 9. Troubleshooting, Best Practices & FAQ
 
