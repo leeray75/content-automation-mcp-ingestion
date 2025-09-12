@@ -14,13 +14,46 @@
     "tools": [
       {
         "name": "ingest_content",
-        "description": "Ingest and validate content (articles, ads, landing pages)"
+        "description": "Ingest and validate content (articles, ads, landing pages)",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "content": {
+              "type": "object",
+              "description": "The content to ingest (article, ad, or landing page)"
+            },
+            "contentType": {
+              "type": "string",
+              "enum": ["article", "ad", "landingPage"],
+              "description": "Optional content type hint"
+            },
+            "metadata": {
+              "type": "object",
+              "description": "Optional metadata for the content"
+            }
+          },
+          "required": ["content"]
+        }
+      },
+      {
+        "name": "get_ingestion_stats",
+        "description": "Get ingestion service statistics",
+        "inputSchema": {
+          "type": "object",
+          "properties": {}
+        }
       }
     ],
     "resources": [
       {
         "name": "ingestion_status",
-        "description": "Get status of ingested content items"
+        "description": "Get status of ingested content items",
+        "uri": "ingestion://status"
+      },
+      {
+        "name": "ingestion_records",
+        "description": "Get ingested content records",
+        "uri": "ingestion://records"
       }
     ]
   },

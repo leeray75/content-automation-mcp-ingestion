@@ -14,7 +14,14 @@
     "test:coverage": "vitest --coverage",
     "inspector:dev": "npx @modelcontextprotocol/inspector stdio tsx src/index.ts",
     "inspector:http": "npx @modelcontextprotocol/inspector http://localhost:3001/mcp",
-    "inspector:cli": "npx @modelcontextprotocol/inspector stdio node build/index.js"
+    "inspector:cli": "npx @modelcontextprotocol/inspector stdio node build/index.js",
+    "docker:build": "sh ./scripts/docker-build.sh",
+    "docker:run": "sh ./scripts/docker-run.sh",
+    "docker:run:http": "sh ./scripts/docker-run-http.sh",
+    "docker:stop": "sh ./scripts/docker-stop.sh",
+    "docker:logs": "sh ./scripts/docker-logs.sh",
+    "docker:inspect": "sh ./scripts/docker-inspect.sh",
+    "inspector": "sh ./scripts/inspector.sh"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",

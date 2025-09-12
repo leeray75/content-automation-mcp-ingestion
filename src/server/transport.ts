@@ -101,22 +101,38 @@ export class TransportManager {
     });
 
     // MCP initialize endpoint (for streamable HTTP)
-    this.app.post('/mcp', express.raw({ type: 'application/json' }), async (req, res) => {
+    this.app.post('/mcp', express.json(), async (req, res) => {
       try {
         logger.info('MCP initialize request received');
         
-        // For now, we'll use SSE transport as a fallback
-        // In a full implementation, you'd use StreamableHTTPServerTransport
-        res.status(501).json({
-          error: 'Streamable HTTP transport not yet implemented',
-          message: 'Please use SSE endpoint at /sse for MCP connections'
+        // Set SSE headers for streaming response
+        res.writeHead(200, {
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache',
+          'Connection': 'keep-alive',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Headers': 'Cache-Control'
         });
+
+        // Create SSE transport for this connection
+        const transport = new SSEServerTransport('/mcp', res);
+        await this.mcpServer.getServer().connect(transport);
+        
+        logger.info('MCP server connected via SSE for initialize request');
+        
+        // Keep connection alive
+        req.on('close', () => {
+          logger.info('MCP initialize connection closed');
+        });
+        
       } catch (error) {
         logger.error('Error handling MCP initialize');
-        res.status(500).json({
-          error: 'Internal server error',
-          message: error instanceof Error ? error.message : 'Unknown error'
-        });
+        if (!res.headersSent) {
+          res.status(500).json({
+            error: 'Internal server error',
+            message: error instanceof Error ? error.message : 'Unknown error'
+          });
+        }
       }
     });
 

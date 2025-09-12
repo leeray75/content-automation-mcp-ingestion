@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2025-09-12
+### Fixed
+- [issue-2](https://github.com/leeray75/content-automation-mcp-ingestion/issues/2) - Enable MCP Inspector connectivity and Docker support for Ingestion server
+- Fixed HTTP /mcp POST endpoint to properly handle MCP Inspector connections using SSE transport
+- Resolved TypeScript compilation errors in logger calls for improved build stability
+- Enhanced mcp.json with detailed tool input schemas and resource URIs for better Inspector metadata display
+
+### Added
+- Comprehensive MCP Inspector testing documentation with step-by-step instructions
+- Docker usage examples with proper environment variable configuration
+- Acceptance criteria checklist for validating all transport modes (stdio dev, stdio built, Docker HTTP)
+- Troubleshooting guide for common Inspector connection issues
+- Enhanced tool schemas with proper input validation for Inspector interface
+- Resource URI definitions for improved Inspector navigation and resource access
+
+### Changed
+- Improved HTTP transport implementation with proper SSE integration for MCP connections
+- Enhanced error handling and logging for transport connection management
+- Updated README.md with detailed testing procedures and Docker deployment instructions
+- Simplified logger interface calls to ensure TypeScript compatibility
+
 ## [0.1.0] - 2025-09-11
 ### Added
 - [issue-1](https://github.com/leeray75/content-automation-mcp-ingestion/issues/1) - Complete MCP server implementation for content ingestion with validation and processing capabilities
