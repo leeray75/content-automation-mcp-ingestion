@@ -1,0 +1,49 @@
+{
+  "id": "content-automation-mcp-ingestion",
+  "name": "Content Automation MCP Ingestion Server",
+  "description": "MCP server for content ingestion with validation and processing capabilities",
+  "version": "0.1.0",
+  "author": "Content Automation Platform",
+  "license": "MIT",
+  "homepage": "https://github.com/leeray75/content-automation-mcp-ingestion",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/leeray75/content-automation-mcp-ingestion.git"
+  },
+  "capabilities": {
+    "tools": [
+      {
+        "name": "ingest_content",
+        "description": "Ingest and validate content (articles, ads, landing pages)"
+      }
+    ],
+    "resources": [
+      {
+        "name": "ingestion_status",
+        "description": "Get status of ingested content items"
+      }
+    ]
+  },
+  "transport": {
+    "stdio": {
+      "command": "node",
+      "args": ["build/index.js"]
+    },
+    "http": {
+      "url": "http://localhost:3001/mcp",
+      "endpoints": {
+        "health": "/health",
+        "initialize": "/mcp"
+      }
+    }
+  },
+  "environment": {
+    "required": [],
+    "optional": [
+      "PORT",
+      "LOG_LEVEL",
+      "STORAGE_PATH",
+      "NODE_ENV"
+    ]
+  }
+}
