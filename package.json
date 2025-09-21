@@ -16,7 +16,6 @@
     "inspector:http": "npx @modelcontextprotocol/inspector http://localhost:3001/mcp",
     "inspector:cli": "npx @modelcontextprotocol/inspector --cli",
     "docker:build": "sh ./scripts/docker-build.sh",
-    "docker:run": "sh ./scripts/docker-run.sh",
     "docker:run:http": "sh ./scripts/docker-run-http.sh",
     "docker:stop": "sh ./scripts/docker-stop.sh",
     "docker:logs": "sh ./scripts/docker-logs.sh",

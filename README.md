@@ -122,6 +122,8 @@ TRANSPORT=http PORT=3001 npm start
 
 ### Docker
 
+**Note:** STDIO transport is disabled in Docker containers. Docker images only support HTTP transport with Streamable HTTP and SSE protocols. To use STDIO transport, run the server directly on the host with `TRANSPORT=stdio npm start`.
+
 #### Using npm scripts (recommended)
 ```bash
 # Build Docker image
@@ -135,9 +137,6 @@ npm run docker:logs
 
 # Stop and remove container
 npm run docker:stop
-
-# Run container in STDIO mode (interactive)
-npm run docker:run
 
 # Connect MCP Inspector to Docker container
 npm run docker:inspect
@@ -153,20 +152,11 @@ docker run --rm -d --name content-ingestion-http \
   -e TRANSPORT=http -e PORT=3001 -p 3001:3001 \
   content-automation-mcp-ingestion
 
-# Run STDIO mode (interactive)
-docker run --rm -it --name content-ingestion-stdio \
-  -e TRANSPORT=stdio \
-  content-automation-mcp-ingestion
-
 # Check logs (HTTP container)
 docker logs content-ingestion-http
 
-# Check logs (STDIO container)
-docker logs content-ingestion-stdio
-
-# Stop containers
+# Stop container
 docker stop content-ingestion-http
-docker stop content-ingestion-stdio
 ```
 
 ### MCP Inspector Testing

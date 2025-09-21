@@ -62,6 +62,7 @@ ENV NODE_ENV=production
 ENV TRANSPORT=http
 ENV PORT=3001
 ENV LOG_LEVEL=info
+ENV IN_DOCKER=true
 
 # Start the application
 CMD ["node", "build/index.js"]
