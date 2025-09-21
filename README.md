@@ -154,27 +154,34 @@ docker run --rm -d --name content-ingestion-http \
   content-automation-mcp-ingestion
 
 # Run STDIO mode (interactive)
-docker run --rm -it --name content-ingestion \
+docker run --rm -it --name content-ingestion-stdio \
   -e TRANSPORT=stdio \
   content-automation-mcp-ingestion
 
-# Check logs
+# Check logs (HTTP container)
 docker logs content-ingestion-http
 
-# Stop container
+# Check logs (STDIO container)
+docker logs content-ingestion-stdio
+
+# Stop containers
 docker stop content-ingestion-http
+docker stop content-ingestion-stdio
 ```
 
 ### MCP Inspector Testing
 ```bash
-# Development mode (stdio, live reload)
+# Development mode (HTTP, live reload)
 npm run inspector:dev
 
-# Built CLI mode (stdio, compiled)
-npm run build && npm run inspector:cli
-
-# HTTP mode (for Docker testing)
+# HTTP mode (connect to local server)
 npm run inspector:http
+
+# CLI mode (command-line interface)
+npm run inspector:cli
+
+# Wrapper script with options
+npm run inspector [dev|http|cli|docker]
 ```
 
 ## 3. File/Directory Naming Conventions
@@ -502,6 +509,11 @@ A: Follow the Quick Add-Tool checklist in the MCP documentation template.
 
 ## 10. Useful External Resource Links
 
+### Project Documentation
+- [MCP SDK Reference](ai-workspace/documentation/mcp-sdk-reference.md) - Comprehensive TypeScript SDK documentation (v1.18.1)
+- [MCP Inspector Reference](ai-workspace/documentation/mcp-inspector-reference.md) - Complete Inspector tool documentation (v0.16.8)
+
+### External Resources
 - [Model Context Protocol SDK](https://www.npmjs.com/package/@modelcontextprotocol/sdk)
 - [MCP Inspector](https://www.npmjs.com/package/@modelcontextprotocol/inspector)
 - [JSON-RPC Specification](https://www.jsonrpc.org/specification)
