@@ -1,11 +1,10 @@
 import express from 'express';
-import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { MCPServer } from './mcp-server.js';
 import { logger } from '../utils/logger.js';
 import { DEFAULT_PORT } from '../utils/constants.js';
 import bearerAuthMiddleware from './middleware/auth.js';
-import { globalEventQueue, EventSubscriber, MCPEvent } from './eventQueue.js';
+import { globalEventQueue } from './eventQueue.js';
 import { randomUUID } from 'crypto';
 import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js';
 
@@ -118,7 +117,6 @@ export class TransportManager {
             records: '/records',
             recordById: '/records/:id'
           },
-          sse: '/sse',
           mcp: '/mcp'
         },
         metadata: {
@@ -133,48 +131,6 @@ export class TransportManager {
       });
     });
 
-    // SSE endpoint for event streaming
-    this.app.get('/sse', (req, res) => {
-      const subscriberId = randomUUID();
-      logger.info({ subscriberId }, 'SSE connection requested');
-      
-      // Set SSE headers
-      res.writeHead(200, {
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Cache-Control'
-      });
-
-      // Create subscriber
-      const subscriber: EventSubscriber = {
-        id: subscriberId,
-        send: (event: MCPEvent) => {
-          const sseData = `event: ${event.event}\ndata: ${JSON.stringify(event.data)}\nid: ${event.id}\n\n`;
-          res.write(sseData);
-        },
-        close: () => {
-          if (!res.destroyed) {
-            res.end();
-          }
-        }
-      };
-
-      // Subscribe to event queue
-      globalEventQueue.subscribe(subscriber);
-
-      // Handle client disconnect
-      req.on('close', () => {
-        logger.info({ subscriberId }, 'SSE connection closed');
-        globalEventQueue.unsubscribe(subscriberId);
-      });
-
-      req.on('error', (error) => {
-        logger.error({ error, subscriberId }, 'SSE connection error');
-        globalEventQueue.unsubscribe(subscriberId);
-      });
-    });
 
     // Map to store transports by session ID
     const transports: { [sessionId: string]: StreamableHTTPServerTransport } = {};
@@ -248,7 +204,7 @@ export class TransportManager {
       }
     });
 
-    // Handle GET requests for server-to-client notifications via SSE
+    // Handle GET requests for server-to-client notifications via HTTP streaming
     this.app.get('/mcp', async (req, res) => {
       // Check if this is a request for MCP session handling (has session ID)
       const sessionId = req.headers['mcp-session-id'] as string | undefined;
@@ -325,7 +281,7 @@ export class TransportManager {
           metadata: req.body.metadata
         });
 
-        // Push event to queue for SSE subscribers
+        // Push event to queue for event tracking
         globalEventQueue.pushEvent({
           event: 'ingest:result',
           data: {
@@ -354,7 +310,7 @@ export class TransportManager {
     this.httpServer = this.app.listen(port, () => {
       logger.info(`HTTP server listening on port ${port}`);
       logger.info(`Health check: http://localhost:${port}/health`);
-      logger.info(`MCP SSE endpoint: http://localhost:${port}/sse`);
+      logger.info(`MCP endpoint: http://localhost:${port}/mcp`);
       logger.info(`Direct ingestion: http://localhost:${port}/ingest`);
     });
   }
