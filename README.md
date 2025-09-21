@@ -46,7 +46,7 @@ A Model Context Protocol (MCP) server for content ingestion with validation and 
 ### High-level Components
 - Entry point (`src/index.ts`) — bootstraps server and global error handlers
 - MCP orchestration (`src/server/mcp-server.ts`) — SDK Server wiring, handler registration, lifecycle
-- Transports (`src/server/transport.ts`) — STDIO / HTTP (SSE + Express endpoints)
+- Transports (`src/server/transport.ts`) — HTTP (Streamable HTTP + Express endpoints)
 - Handlers (`src/handlers/*-handlers.ts`) — request validation and delegation
 - Services (`src/services/ingestion-service.ts`) — content ingestion business logic and health/stats
 - Types & utils (`src/types/*`, `src/utils/*`) — shared shape definitions and helpers
@@ -80,7 +80,7 @@ mcp.json
 ### Component Interactions
 1. `index.ts` creates `MCPServer`
 2. `MCPServer` constructs services and handlers, instantiates `TransportManager`, and registers SDK request handlers
-3. Transport (stdio/http) is created: stdio connects the SDK Server directly; http starts Express routes for JSON-RPC and SSE
+3. Transport (stdio/http) is created: stdio connects the SDK Server directly; http starts Express routes for JSON-RPC and Streamable HTTP
 4. Handlers call services to implement business behavior and produce SDK-shaped responses
 
 ## 2. Step-by-step Setup Instructions
@@ -122,7 +122,7 @@ TRANSPORT=http PORT=3001 npm start
 
 ### Docker
 
-**Note:** STDIO transport is disabled in Docker containers. Docker images only support HTTP transport with Streamable HTTP and SSE protocols. To use STDIO transport, run the server directly on the host with `TRANSPORT=stdio npm start`.
+**Note:** STDIO transport is disabled in Docker containers. Docker images only support HTTP transport with Streamable HTTP protocol. To use STDIO transport, run the server directly on the host with `TRANSPORT=stdio npm start`.
 
 #### Using npm scripts (recommended)
 ```bash
@@ -198,8 +198,7 @@ Bootstraps the app, configures global error handlers, instantiates and starts `M
 - `TransportManager` handles `stdio` or `http` modes
 - `HttpTransport` implements:
   - `/health` - Health check endpoint
-  - `/mcp` - Server metadata endpoint
-  - `/sse` - Server-Sent Events for MCP connections
+  - `/mcp` - Server metadata and MCP protocol endpoint
   - `/ingest` - Direct ingestion endpoint (non-MCP)
 
 ### handlers & services
@@ -275,12 +274,6 @@ Response (202 Accepted):
   "message": "Content ingested successfully"
 }
 ```
-
-### D. Server-Sent Events
-```
-GET /sse
-```
-For MCP connections over HTTP with SSE transport.
 
 ### MCP Tools
 1. **ingest_content** - Ingest and validate content (articles, ads, landing pages)
@@ -392,7 +385,7 @@ npm run inspector:http
 
 **Expected Results:**
 - Health endpoint returns status "healthy"
-- Inspector connects via HTTP/SSE transport
+- Inspector connects via HTTP Streamable transport
 - All tools and resources available
 - Container logs show MCP connection events
 
@@ -466,7 +459,7 @@ npm run test:coverage
 **Inspector connection fails:**
 - Confirm server is running in HTTP mode
 - Check that port 3001 is accessible
-- Verify `/sse` endpoint is responding
+- Verify `/mcp` endpoint is responding
 
 **Content validation errors:**
 - Check that content matches expected schema (article, ad, or landing page)
