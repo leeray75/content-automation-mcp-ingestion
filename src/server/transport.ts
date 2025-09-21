@@ -4,6 +4,7 @@ import { MCPServer } from './mcp-server.js';
 import { logger } from '../utils/logger.js';
 import { DEFAULT_PORT } from '../utils/constants.js';
 import bearerAuthMiddleware from './middleware/auth.js';
+import { getAuthConfig } from './middleware/auth/index.js';
 import { globalEventQueue } from './eventQueue.js';
 import { randomUUID } from 'crypto';
 import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js';
@@ -120,7 +121,7 @@ export class TransportManager {
           mcp: '/mcp'
         },
         metadata: {
-          authEnabled: process.env.MCP_AUTH_ENABLED === 'true',
+          auth: getAuthConfig(),
           transport: 'http',
           port: parseInt(process.env.PORT || DEFAULT_PORT.toString()),
           stats: {
