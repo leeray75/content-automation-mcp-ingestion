@@ -1,0 +1,16 @@
+Phase 2 — Core Implementation
+
+Objective: Remove SSE transport code and endpoints from core server implementation.
+
+Required Reading:
+- ai-workspace/planning/issue-5-phase-2-implementation.md
+- ai-workspace/documentation/mcp-sdk-reference.md
+
+Actions:
+- Apply the code changes listed in the planning document
+- Remove SSE imports, endpoints, and related functionality
+- Preserve HTTP streaming transport for MCP connections
+- Run unit tests to verify changes
+- Create branch issue-5/phase-2 for commits
+
+Output: Create completion report at ai-workspace/completion-reports/issue-5-phase-2-completion-report.md (include summary of prior phase reports).

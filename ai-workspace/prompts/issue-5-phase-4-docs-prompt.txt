@@ -1,0 +1,16 @@
+Phase 4 — Documentation and Scripts
+
+Objective: Update all documentation, scripts, and configuration files to remove SSE references.
+
+Required Reading:
+- ai-workspace/planning/issue-5-phase-4-docs-scripts.md
+- ai-workspace/documentation/mcp-sdk-reference.md
+
+Actions:
+- Update README.md to remove SSE references
+- Update package.json scripts and Docker configuration
+- Update ai-workspace documentation files
+- Clean up environment variable documentation
+- Create branch issue-5/phase-4 for commits
+
+Output: Create completion report at ai-workspace/completion-reports/issue-5-phase-4-completion-report.md (include summary of prior phase reports).
