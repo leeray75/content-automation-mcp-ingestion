@@ -12,9 +12,7 @@
     "start": "node build/index.js",
     "test": "vitest",
     "test:coverage": "vitest --coverage",
-    "inspector:dev": "npx @modelcontextprotocol/inspector stdio tsx src/index.ts",
     "inspector:http": "npx @modelcontextprotocol/inspector http://localhost:3001/mcp",
-    "inspector:cli": "npx @modelcontextprotocol/inspector stdio node build/index.js",
     "docker:build": "sh ./scripts/docker-build.sh",
     "docker:run": "sh ./scripts/docker-run.sh",
     "docker:run:http": "sh ./scripts/docker-run-http.sh",
@@ -24,7 +22,7 @@
     "inspector": "sh ./scripts/inspector.sh"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.0",
+    "@modelcontextprotocol/sdk": "1.18.1",
     "express": "^4.21.0",
     "zod": "^3.23.8",
     "pino": "^9.4.0",

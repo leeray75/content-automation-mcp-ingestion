@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- [issue-4](https://github.com/leeray75/content-automation-mcp-ingestion/issues/4) - Pin @modelcontextprotocol/sdk to 1.18.1 (phase-1)
+- [issue-4](https://github.com/leeray75/content-automation-mcp-ingestion/issues/4) - Disabled-by-default bearer auth middleware skeleton (MCP_AUTH_ENABLED)
+
+### Changed
+- [issue-4](https://github.com/leeray75/content-automation-mcp-ingestion/issues/4) - Removed inspector stdio scripts (use http inspector script)
+
 ## [0.1.1] - 2025-09-12
 ### Fixed
 - [issue-2](https://github.com/leeray75/content-automation-mcp-ingestion/issues/2) - Enable MCP Inspector connectivity and Docker support for Ingestion server
