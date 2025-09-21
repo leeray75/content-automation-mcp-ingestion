@@ -1,9 +1,9 @@
-# Issue: Inspector SSE connectivity — root cause and recommended approach
+# Issue: Inspector SSE connectivity — RESOLVED (SSE Removed)
 
 **Date**: 2025-09-21  
 **Author**: Cline (assistant)  
-**Status**: Analysis Complete  
-**Priority**: Medium  
+**Status**: RESOLVED - SSE transport removed in issue-5  
+**Priority**: Closed
 
 ## Summary
 

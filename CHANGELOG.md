@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2025-09-21
+### Changed
+- [issue-5](https://github.com/leeray75/content-automation-mcp-ingestion/issues/5) - **Breaking**: Removed SSE transport support - server now uses Streamable HTTP only
+- [issue-5](https://github.com/leeray75/content-automation-mcp-ingestion/issues/5) - Updated documentation to remove SSE references and reflect modern HTTP streaming transport
+- [issue-5](https://github.com/leeray75/content-automation-mcp-ingestion/issues/5) - Enhanced authentication middleware with JWT and API key support
+- [issue-5](https://github.com/leeray75/content-automation-mcp-ingestion/issues/5) - Improved transport implementation using StreamableHTTPServerTransport
+
+### Removed
+- [issue-5](https://github.com/leeray75/content-automation-mcp-ingestion/issues/5) - SSE transport endpoint `/sse` - use `/mcp` for MCP Inspector connections
+- [issue-5](https://github.com/leeray75/content-automation-mcp-ingestion/issues/5) - SSE-related imports and dependencies from transport layer
+
 ## [0.2.0] - 2025-09-21
 ### Added
 - [issue-4](https://github.com/leeray75/content-automation-mcp-ingestion/issues/4) - **MCP Build Server Modernization Complete** - Upgraded to @modelcontextprotocol/sdk@1.18.1 with full Inspector integration
