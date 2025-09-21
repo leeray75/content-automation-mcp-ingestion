@@ -4,6 +4,7 @@ import {
   ListToolsRequestSchema,
   ListResourcesRequestSchema,
   ReadResourceRequestSchema,
+  InitializeRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 
 import { IngestionService } from '../services/ingestion-service.js';
@@ -44,6 +45,22 @@ export class MCPServer {
    * Setup MCP request handlers
    */
   private setupHandlers() {
+    // Initialize handler (required by MCP protocol)
+    this.server.setRequestHandler(InitializeRequestSchema, async (request) => {
+      logger.info('MCP initialize request handled successfully');
+      return {
+        protocolVersion: '2024-11-05',
+        capabilities: {
+          tools: {},
+          resources: {},
+        },
+        serverInfo: {
+          name: SERVER_INFO.name,
+          version: SERVER_INFO.version,
+        },
+      };
+    });
+
     // Tools handlers
     this.server.setRequestHandler(ListToolsRequestSchema, async () => {
       return await this.toolHandlers.handleListTools();
