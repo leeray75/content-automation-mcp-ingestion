@@ -3,6 +3,7 @@ set -euo pipefail
 
 CONTAINER_NAME="${1:-content-ingestion-http}"
 
+# Stop specified container
 if docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
   echo "Stopping container ${CONTAINER_NAME}"
   docker stop "${CONTAINER_NAME}" || true

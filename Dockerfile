@@ -48,19 +48,21 @@ USER mcp
 # Expose port
 EXPOSE 3001
 
+# Install curl for health check
+USER root
+RUN apk add --no-cache curl
+USER mcp
+
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD if [ "$TRANSPORT" = "http" ]; then \
-        wget --no-verbose --tries=1 --spider http://localhost:${PORT:-3001}/health || exit 1; \
-      else \
-        ps aux | grep -v grep | grep node || exit 1; \
-      fi
+  CMD curl --fail http://localhost:${PORT:-3001}/health || exit 1
 
 # Default environment variables
 ENV NODE_ENV=production
 ENV TRANSPORT=http
 ENV PORT=3001
 ENV LOG_LEVEL=info
+ENV IN_DOCKER=true
 
 # Start the application
 CMD ["node", "build/index.js"]

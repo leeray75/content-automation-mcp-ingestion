@@ -1,0 +1,14 @@
+Review the Phase 1 plan at content-automation-platform/content-automation-mcp-ingestion/ai-workspace/planning/issue-4-phase-1-setup.md. Verify the plan is complete to prepare the repo for modernization (Node 22 compatibility, SDK pinning plan, env vars, auth middleware skeleton). Produce:
+1) A minimal implementation checklist of concrete edits (file paths and exact changes to make) required to complete Phase 1.
+2) Any missing steps, risks, or clarifying questions (one-line each).
+3) A single-shell command list to verify (install, build, run tests) in order.
+After you (human/agent) complete the checklist in the repo, create a completion report file at:
+content-automation-platform/content-automation-mcp-ingestion/ai-workspace/completion-reports/issue-4-phase-1-completion-report.md
+The completion report must contain:
+- Title and timestamp
+- Short summary (1–3 lines)
+- Files created/modified (list with short description)
+- Commands run and test results (pass/fail)
+- Blockers or follow-ups (if any)
+- Next steps for Phase 2 (1–3 bullets)
+Produce outputs in plain markdown only.

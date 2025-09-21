@@ -40,7 +40,7 @@ describe('IngestionService', () => {
 
       expect(result.status).toBe(INGESTION_STATUS.FAILED);
       expect(result.errors).toBeDefined();
-      expect(result.errors).toHaveLength.greaterThan(0);
+      expect(result.errors!.length).toBeGreaterThan(0);
     });
 
     it('should store ingestion records', async () => {

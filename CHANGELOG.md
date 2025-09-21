@@ -7,6 +7,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2025-09-21
+### Changed
+- [issue-5](https://github.com/leeray75/content-automation-mcp-ingestion/issues/5) - **Breaking**: Removed SSE transport support - server now uses Streamable HTTP only
+- [issue-5](https://github.com/leeray75/content-automation-mcp-ingestion/issues/5) - Updated documentation to remove SSE references and reflect modern HTTP streaming transport
+- [issue-5](https://github.com/leeray75/content-automation-mcp-ingestion/issues/5) - Enhanced authentication middleware with JWT and API key support
+- [issue-5](https://github.com/leeray75/content-automation-mcp-ingestion/issues/5) - Improved transport implementation using StreamableHTTPServerTransport
+
+### Removed
+- [issue-5](https://github.com/leeray75/content-automation-mcp-ingestion/issues/5) - SSE transport endpoint `/sse` - use `/mcp` for MCP Inspector connections
+- [issue-5](https://github.com/leeray75/content-automation-mcp-ingestion/issues/5) - SSE-related imports and dependencies from transport layer
+
+## [0.2.0] - 2025-09-21
+### Added
+- [issue-4](https://github.com/leeray75/content-automation-mcp-ingestion/issues/4) - **MCP Build Server Modernization Complete** - Upgraded to @modelcontextprotocol/sdk@1.18.1 with full Inspector integration
+- [issue-4](https://github.com/leeray75/content-automation-mcp-ingestion/issues/4) - Streamable HTTP transport implementation according to official MCP SDK documentation
+- [issue-4](https://github.com/leeray75/content-automation-mcp-ingestion/issues/4) - **Critical Fix**: Added missing InitializeRequestSchema handler for MCP protocol compliance
+- [issue-4](https://github.com/leeray75/content-automation-mcp-ingestion/issues/4) - Session management with proper session ID handling for Streamable HTTP
+- [issue-4](https://github.com/leeray75/content-automation-mcp-ingestion/issues/4) - Bearer authentication middleware skeleton (disabled by default, MCP_AUTH_ENABLED)
+- [issue-4](https://github.com/leeray75/content-automation-mcp-ingestion/issues/4) - Enhanced SSE event streaming with backlog queue management
+- [issue-4](https://github.com/leeray75/content-automation-mcp-ingestion/issues/4) - Multi-stage Docker build with node:22-alpine for production optimization
+
+### Changed
+- [issue-4](https://github.com/leeray75/content-automation-mcp-ingestion/issues/4) - **Breaking**: Removed STDIO transport support (use HTTP inspector script only)
+- [issue-4](https://github.com/leeray75/content-automation-mcp-ingestion/issues/4) - Complete transport.ts rewrite implementing proper Streamable HTTP according to MCP SDK v1.18.1
+- [issue-4](https://github.com/leeray75/content-automation-mcp-ingestion/issues/4) - Enhanced error handling and JSON-RPC response formatting
+- [issue-4](https://github.com/leeray75/content-automation-mcp-ingestion/issues/4) - Improved Docker container security with non-root user and proper permissions
+
+### Fixed
+- [issue-4](https://github.com/leeray75/content-automation-mcp-ingestion/issues/4) - **Major Fix**: Resolved "Error handling MCP initialize" messages that prevented Inspector connections
+- [issue-4](https://github.com/leeray75/content-automation-mcp-ingestion/issues/4) - Fixed MCP protocol handshake completion with proper capabilities response
+- [issue-4](https://github.com/leeray75/content-automation-mcp-ingestion/issues/4) - Resolved transport lifecycle management and session cleanup issues
+- [issue-4](https://github.com/leeray75/content-automation-mcp-ingestion/issues/4) - Fixed TypeScript compilation errors in logger calls throughout the application
+
+### Technical Details
+- **Inspector Status**: ✅ **WORKING** - Successfully connecting via StreamableHttp transport
+- **MCP SDK Version**: Upgraded from 0.5.0 to 1.18.1 (latest)
+- **Transport**: Streamable HTTP (primary) with SSE fallback for backward compatibility
+- **Protocol Compliance**: Full MCP protocol handshake and JSON-RPC response formatting
+- **Session Management**: Proper session ID handling with cleanup and error recovery
+- **Docker**: Multi-stage build with security hardening and performance optimization
+
 ## [0.1.1] - 2025-09-12
 ### Fixed
 - [issue-2](https://github.com/leeray75/content-automation-mcp-ingestion/issues/2) - Enable MCP Inspector connectivity and Docker support for Ingestion server

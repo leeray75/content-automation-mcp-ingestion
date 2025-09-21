@@ -1,0 +1,15 @@
+Before planning, read the Phase 1 completion report file at content-automation-platform/content-automation-mcp-ingestion/ai-workspace/completion-reports/issue-4-phase-1-completion-report.md and include any constraints or decisions from Phase 1. Then review the Phase 2 plan at content-automation-platform/content-automation-mcp-ingestion/ai-workspace/planning/issue-4-phase-2-refactor.md. Produce:
+1) A prioritized implementation checklist of concrete code tasks (file paths and exact changes) to implement Phase 2 (transport/SSE, /mcp inspector, Dockerfile update, auth wiring, tests).
+2) For each checklist item, specify one automated test or manual verification command that proves it works.
+3) A short rollout plan (branch/PR steps + verification).
+After Phase 2 is completed, create a completion report file at:
+content-automation-platform/content-automation-mcp-ingestion/ai-workspace/completion-reports/issue-4-phase-2-completion-report.md
+The completion report must contain:
+- Title and timestamp
+- Summary (1–3 lines)
+- Files created/modified
+- Tests and results (include commands used)
+- Docker build/test summary
+- Inspector /mcp verification output or notes
+- Remaining risks and recommended follow-ups
+Produce outputs in plain markdown only.

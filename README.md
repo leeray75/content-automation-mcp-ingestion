@@ -46,7 +46,7 @@ A Model Context Protocol (MCP) server for content ingestion with validation and 
 ### High-level Components
 - Entry point (`src/index.ts`) — bootstraps server and global error handlers
 - MCP orchestration (`src/server/mcp-server.ts`) — SDK Server wiring, handler registration, lifecycle
-- Transports (`src/server/transport.ts`) — STDIO / HTTP (SSE + Express endpoints)
+- Transports (`src/server/transport.ts`) — HTTP (Streamable HTTP + Express endpoints)
 - Handlers (`src/handlers/*-handlers.ts`) — request validation and delegation
 - Services (`src/services/ingestion-service.ts`) — content ingestion business logic and health/stats
 - Types & utils (`src/types/*`, `src/utils/*`) — shared shape definitions and helpers
@@ -80,7 +80,7 @@ mcp.json
 ### Component Interactions
 1. `index.ts` creates `MCPServer`
 2. `MCPServer` constructs services and handlers, instantiates `TransportManager`, and registers SDK request handlers
-3. Transport (stdio/http) is created: stdio connects the SDK Server directly; http starts Express routes for JSON-RPC and SSE
+3. Transport (stdio/http) is created: stdio connects the SDK Server directly; http starts Express routes for JSON-RPC and Streamable HTTP
 4. Handlers call services to implement business behavior and produce SDK-shaped responses
 
 ## 2. Step-by-step Setup Instructions
@@ -122,6 +122,8 @@ TRANSPORT=http PORT=3001 npm start
 
 ### Docker
 
+**Note:** STDIO transport is disabled in Docker containers. Docker images only support HTTP transport with Streamable HTTP protocol. To use STDIO transport, run the server directly on the host with `TRANSPORT=stdio npm start`.
+
 #### Using npm scripts (recommended)
 ```bash
 # Build Docker image
@@ -135,9 +137,6 @@ npm run docker:logs
 
 # Stop and remove container
 npm run docker:stop
-
-# Run container in STDIO mode (interactive)
-npm run docker:run
 
 # Connect MCP Inspector to Docker container
 npm run docker:inspect
@@ -153,12 +152,7 @@ docker run --rm -d --name content-ingestion-http \
   -e TRANSPORT=http -e PORT=3001 -p 3001:3001 \
   content-automation-mcp-ingestion
 
-# Run STDIO mode (interactive)
-docker run --rm -it --name content-ingestion \
-  -e TRANSPORT=stdio \
-  content-automation-mcp-ingestion
-
-# Check logs
+# Check logs (HTTP container)
 docker logs content-ingestion-http
 
 # Stop container
@@ -167,14 +161,17 @@ docker stop content-ingestion-http
 
 ### MCP Inspector Testing
 ```bash
-# Development mode (stdio, live reload)
+# Development mode (HTTP, live reload)
 npm run inspector:dev
 
-# Built CLI mode (stdio, compiled)
-npm run build && npm run inspector:cli
-
-# HTTP mode (for Docker testing)
+# HTTP mode (connect to local server)
 npm run inspector:http
+
+# CLI mode (command-line interface)
+npm run inspector:cli
+
+# Wrapper script with options
+npm run inspector [dev|http|cli|docker]
 ```
 
 ## 3. File/Directory Naming Conventions
@@ -201,8 +198,7 @@ Bootstraps the app, configures global error handlers, instantiates and starts `M
 - `TransportManager` handles `stdio` or `http` modes
 - `HttpTransport` implements:
   - `/health` - Health check endpoint
-  - `/mcp` - Server metadata endpoint
-  - `/sse` - Server-Sent Events for MCP connections
+  - `/mcp` - Server metadata and MCP protocol endpoint
   - `/ingest` - Direct ingestion endpoint (non-MCP)
 
 ### handlers & services
@@ -278,12 +274,6 @@ Response (202 Accepted):
   "message": "Content ingested successfully"
 }
 ```
-
-### D. Server-Sent Events
-```
-GET /sse
-```
-For MCP connections over HTTP with SSE transport.
 
 ### MCP Tools
 1. **ingest_content** - Ingest and validate content (articles, ads, landing pages)
@@ -395,7 +385,7 @@ npm run inspector:http
 
 **Expected Results:**
 - Health endpoint returns status "healthy"
-- Inspector connects via HTTP/SSE transport
+- Inspector connects via HTTP Streamable transport
 - All tools and resources available
 - Container logs show MCP connection events
 
@@ -469,7 +459,7 @@ npm run test:coverage
 **Inspector connection fails:**
 - Confirm server is running in HTTP mode
 - Check that port 3001 is accessible
-- Verify `/sse` endpoint is responding
+- Verify `/mcp` endpoint is responding
 
 **Content validation errors:**
 - Check that content matches expected schema (article, ad, or landing page)
@@ -502,6 +492,11 @@ A: Follow the Quick Add-Tool checklist in the MCP documentation template.
 
 ## 10. Useful External Resource Links
 
+### Project Documentation
+- [MCP SDK Reference](ai-workspace/documentation/mcp-sdk-reference.md) - Comprehensive TypeScript SDK documentation (v1.18.1)
+- [MCP Inspector Reference](ai-workspace/documentation/mcp-inspector-reference.md) - Complete Inspector tool documentation (v0.16.8)
+
+### External Resources
 - [Model Context Protocol SDK](https://www.npmjs.com/package/@modelcontextprotocol/sdk)
 - [MCP Inspector](https://www.npmjs.com/package/@modelcontextprotocol/inspector)
 - [JSON-RPC Specification](https://www.jsonrpc.org/specification)

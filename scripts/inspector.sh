@@ -5,7 +5,7 @@ MODE="${1:-dev}"
 
 case "${MODE}" in
   dev)
-    echo "Starting MCP Inspector in development mode (stdio)"
+    echo "Starting MCP Inspector in development mode (HTTP, local server)"
     npm run inspector:dev
     ;;
   http)
@@ -13,7 +13,7 @@ case "${MODE}" in
     npm run inspector:http
     ;;
   cli)
-    echo "Starting MCP Inspector for built CLI"
+    echo "Starting MCP Inspector in CLI mode"
     npm run inspector:cli
     ;;
   docker)
@@ -22,10 +22,10 @@ case "${MODE}" in
     ;;
   *)
     echo "Usage: $0 [dev|http|cli|docker]"
-    echo "  dev    - Connect to development server (stdio)"
+    echo "  dev    - Start MCP Inspector in development mode (HTTP, local server)"
     echo "  http   - Connect to local HTTP server"
-    echo "  cli    - Connect to built CLI server (stdio)"
-    echo "  docker - Connect to Docker container (http)"
+    echo "  cli    - Start MCP Inspector in CLI mode"
+    echo "  docker - Connect to Docker container (HTTP)"
     exit 1
     ;;
 esac

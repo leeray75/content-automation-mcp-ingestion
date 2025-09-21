@@ -11,12 +11,12 @@
     "build": "tsc -p tsconfig.json",
     "start": "node build/index.js",
     "test": "vitest",
+    "test:integration": "vitest test/integration.test.ts --environment node",
     "test:coverage": "vitest --coverage",
-    "inspector:dev": "npx @modelcontextprotocol/inspector stdio tsx src/index.ts",
+    "inspector:dev": "npx @modelcontextprotocol/inspector",
     "inspector:http": "npx @modelcontextprotocol/inspector http://localhost:3001/mcp",
-    "inspector:cli": "npx @modelcontextprotocol/inspector stdio node build/index.js",
+    "inspector:cli": "npx @modelcontextprotocol/inspector --cli",
     "docker:build": "sh ./scripts/docker-build.sh",
-    "docker:run": "sh ./scripts/docker-run.sh",
     "docker:run:http": "sh ./scripts/docker-run-http.sh",
     "docker:stop": "sh ./scripts/docker-stop.sh",
     "docker:logs": "sh ./scripts/docker-logs.sh",
@@ -24,20 +24,27 @@
     "inspector": "sh ./scripts/inspector.sh"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.0",
+    "@modelcontextprotocol/sdk": "1.18.1",
     "express": "^4.21.0",
     "zod": "^3.23.8",
     "pino": "^9.4.0",
     "dotenv": "^16.4.5",
+    "jsonwebtoken": "^9.0.2",
     "content-automation-schemas": "file:../content-automation-schemas"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
     "@types/node": "^22.7.4",
+    "@types/jsonwebtoken": "^9.0.6",
+    "@types/autocannon": "^7.12.7",
     "tsx": "^4.19.1",
     "typescript": "^5.6.2",
     "vitest": "^2.1.1",
-    "@vitest/coverage-v8": "^2.1.1"
+    "@vitest/coverage-v8": "^2.1.1",
+    "supertest": "^7.1.4",
+    "@types/supertest": "^6.0.3",
+    "node-mocks-http": "^1.17.2",
+    "autocannon": "^8.0.0"
   },
   "engines": {
     "node": ">=22"
