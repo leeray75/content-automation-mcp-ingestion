@@ -1,6 +1,17 @@
 # Content Automation MCP Ingestion Server
 
-A Model Context Protocol (MCP) server for content ingestion with validation and processing capabilities. This server provides tools and resources for ingesting articles, ads, and landing pages with schema validation.
+A Model Context Protocol (MCP) server for content ingestion with validation and processing capabilities. This server provides tools and resources for ingesting articles, ads, and landing pages with comprehensive Zod schema validation, dual transport support (STDIO for local development, HTTP for containers), and enhanced error handling with request correlation.
+
+## Features
+
+- ✅ **Dual Transport Support**: STDIO for local development, HTTP for container deployment
+- ✅ **MCP Protocol Compliance**: Full MCP tools and resources with Inspector connectivity
+- ✅ **Direct HTTP Endpoints**: REST API for E2E integration workflows
+- ✅ **Comprehensive Validation**: Zod schemas for Article, Ad, and LandingPage content types
+- ✅ **Request Correlation**: X-Request-Id headers for request tracking and debugging
+- ✅ **Enhanced Error Handling**: Structured error responses with detailed validation feedback
+- ✅ **Docker Deployment**: Production-ready containerization with health checks
+- ✅ **MCP Inspector Support**: Full connectivity in both STDIO and HTTP modes
 
 ## Quick Start (30 minutes)
 

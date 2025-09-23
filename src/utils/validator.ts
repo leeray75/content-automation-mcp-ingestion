@@ -1,31 +1,48 @@
 import { z } from 'zod';
 import { logger } from './logger.js';
+import { validateOrThrow, ValidationError } from './validation.js';
 
-// Temporary schemas until content-automation-schemas is properly built
+// Enhanced schemas per Issue #9 Phase 4 specifications
 const ArticleSchema = z.object({
-  headline: z.string(),
-  body: z.string(),
-  author: z.string(),
-  publishDate: z.string(),
-  tags: z.array(z.string()).optional()
+  headline: z.string().min(1, "Headline is required"),
+  body: z.string().min(1, "Body is required"),
+  author: z.string().min(1, "Author is required"),
+  publishDate: z.string().datetime("Invalid date format"),
+  tags: z.array(z.string()).optional(),
+  excerpt: z.string().optional(),
+  category: z.string().optional()
 });
 
 const AdSchema = z.object({
-  adText: z.string(),
-  targetAudience: z.string(),
-  callToAction: z.string().optional()
+  adText: z.string().min(1, "Ad text is required"),
+  targetAudience: z.string().min(1, "Target audience is required"),
+  callToAction: z.string().optional(),
+  budget: z.number().positive().optional(),
+  duration: z.number().positive().optional(),
+  platform: z.string().optional()
 });
 
 const LandingPageSchema = z.object({
-  pageTitle: z.string(),
+  pageTitle: z.string().min(1, "Page title is required"),
   heroSection: z.object({
-    headline: z.string(),
-    subheadline: z.string().optional()
-  })
+    headline: z.string().min(1, "Hero headline is required"),
+    subheadline: z.string().optional(),
+    ctaText: z.string().optional(),
+    ctaUrl: z.string().url().optional()
+  }),
+  sections: z.array(z.object({
+    type: z.enum(['text', 'image', 'video', 'form']),
+    content: z.string(),
+    order: z.number().int().min(0)
+  })).optional()
 });
 
 const ContentSchema = z.union([ArticleSchema, AdSchema, LandingPageSchema]);
 
+// Export schemas for external use
+export { ArticleSchema, AdSchema, LandingPageSchema, ContentSchema };
+
+// Legacy interface for backward compatibility
 export interface ValidationResult {
   success: boolean;
   data?: any;
@@ -35,11 +52,36 @@ export interface ValidationResult {
 
 export class ContentValidator {
   /**
-   * Validate content against the appropriate schema
+   * Validate content against the appropriate schema using validateOrThrow
+   * @throws ValidationError if validation fails
    */
-  static validateContent(content: unknown): ValidationResult {
+  static validateContent(content: unknown) {
+    return validateOrThrow(content, ContentSchema, 'content validation');
+  }
+
+  /**
+   * Validate specific content types using validateOrThrow
+   * @throws ValidationError if validation fails
+   */
+  static validateArticle(content: unknown) {
+    return validateOrThrow(content, ArticleSchema, 'article validation');
+  }
+
+  static validateAd(content: unknown) {
+    return validateOrThrow(content, AdSchema, 'ad validation');
+  }
+
+  static validateLandingPage(content: unknown) {
+    return validateOrThrow(content, LandingPageSchema, 'landing page validation');
+  }
+
+  /**
+   * Legacy method that returns ValidationResult for backward compatibility
+   * @deprecated Use validateContent() which throws ValidationError instead
+   */
+  static validateContentLegacy(content: unknown): ValidationResult {
     try {
-      const validatedContent = ContentSchema.parse(content);
+      const validatedContent = this.validateContent(content);
       logger.info('Content validation successful');
       
       return {
@@ -47,13 +89,13 @@ export class ContentValidator {
         data: validatedContent
       };
     } catch (error) {
-      if (error instanceof z.ZodError) {
+      if (error instanceof ValidationError) {
         logger.warn('Content validation failed');
         
         return {
           success: false,
-          error: 'Validation failed',
-          details: error.errors
+          error: error.message,
+          details: error.details
         };
       }
       
@@ -66,55 +108,9 @@ export class ContentValidator {
   }
 
   /**
-   * Validate specific content type
-   */
-  static validateArticle(content: unknown): ValidationResult {
-    return this.validateWithSchema(content, ArticleSchema, 'article');
-  }
-
-  static validateAd(content: unknown): ValidationResult {
-    return this.validateWithSchema(content, AdSchema, 'ad');
-  }
-
-  static validateLandingPage(content: unknown): ValidationResult {
-    return this.validateWithSchema(content, LandingPageSchema, 'landingPage');
-  }
-
-  /**
-   * Helper method to validate with a specific schema
-   */
-  private static validateWithSchema(content: unknown, schema: z.ZodSchema, type: string): ValidationResult {
-    try {
-      const validatedContent = schema.parse(content);
-      logger.info(`${type} validation successful`);
-      
-      return {
-        success: true,
-        data: validatedContent
-      };
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        logger.warn(`${type} validation failed`);
-        
-        return {
-          success: false,
-          error: `${type} validation failed`,
-          details: error.errors
-        };
-      }
-      
-      logger.error(`Unexpected ${type} validation error`);
-      return {
-        success: false,
-        error: `Unexpected ${type} validation error`
-      };
-    }
-  }
-
-  /**
    * Determine content type from validated content
    */
-  private static getContentType(content: any): string {
+  static getContentType(content: any): string {
     if ('headline' in content && 'body' in content && 'author' in content) {
       return 'article';
     }

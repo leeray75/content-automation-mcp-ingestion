@@ -1,10 +1,13 @@
 import express from 'express';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { MCPServer } from './mcp-server.js';
 import { logger } from '../utils/logger.js';
 import { DEFAULT_PORT } from '../utils/constants.js';
 import bearerAuthMiddleware from './middleware/auth.js';
 import { getAuthConfig } from './middleware/auth/index.js';
+import { requestIdMiddleware } from './middleware/request-id.js';
+import { errorHandler } from './middleware/error-handler.js';
 import { globalEventQueue } from './eventQueue.js';
 import { randomUUID } from 'crypto';
 import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js';
@@ -22,7 +25,7 @@ export class TransportManager {
    * Start transport based on environment
    */
   async start() {
-    const transport = process.env.TRANSPORT || 'http';
+    const transport = process.env.TRANSPORT || 'stdio'; // Default to stdio for local development
     
     // Explicitly reject stdio in Docker containers
     if (transport.toLowerCase() === 'stdio' && process.env.IN_DOCKER === 'true') {
@@ -32,13 +35,30 @@ export class TransportManager {
     }
     
     switch (transport.toLowerCase()) {
+      case 'stdio':
+        await this.startStdioTransport();
+        break;
       case 'http':
         await this.startHttpTransport();
         break;
       default:
-        logger.error(`Unsupported transport: ${transport}. Only 'http' is supported.`);
+        logger.error(`Unsupported transport: ${transport}. Supported: 'stdio', 'http'`);
         throw new Error(`Unsupported transport: ${transport}`);
     }
+  }
+
+  /**
+   * Start STDIO transport for local development
+   */
+  private async startStdioTransport() {
+    logger.info('Starting STDIO transport');
+    
+    const transport = new StdioServerTransport();
+    await this.mcpServer.getServer().connect(transport);
+    
+    logger.info('STDIO transport connected');
+    logger.info('MCP server ready for Inspector connection');
+    logger.info('Use: npx @modelcontextprotocol/inspector node build/index.js');
   }
 
   /**
@@ -51,7 +71,10 @@ export class TransportManager {
     
     this.app = express();
     
-    // Middleware
+    // Request ID middleware (first to ensure all requests have correlation ID)
+    this.app.use(requestIdMiddleware);
+    
+    // Basic middleware
     this.app.use(express.json({ limit: '10mb' }));
     this.app.use(express.urlencoded({ extended: true }));
     
@@ -59,8 +82,8 @@ export class TransportManager {
     this.app.use((req, res, next) => {
       res.header('Access-Control-Allow-Origin', '*');
       res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-      res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-      res.header('Access-Control-Expose-Headers', 'mcp-session-id');
+      res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Request-Id');
+      res.header('Access-Control-Expose-Headers', 'mcp-session-id, x-request-id');
       
       if (req.method === 'OPTIONS') {
         res.sendStatus(200);
@@ -306,6 +329,9 @@ export class TransportManager {
         });
       }
     });
+
+    // Error handling middleware (must be last)
+    this.app.use(errorHandler);
 
     // Start HTTP server
     this.httpServer = this.app.listen(port, () => {

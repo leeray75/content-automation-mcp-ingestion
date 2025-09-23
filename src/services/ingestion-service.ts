@@ -1,5 +1,6 @@
 import { randomUUID } from 'crypto';
 import { ContentValidator } from '../utils/validator.js';
+import { ValidationError } from '../utils/validation.js';
 import { logger } from '../utils/logger.js';
 import { INGESTION_STATUS, CONTENT_TYPES } from '../utils/constants.js';
 import type { 
@@ -14,7 +15,7 @@ export class IngestionService {
   private startTime: number = Date.now();
 
   /**
-   * Ingest content with validation
+   * Ingest content with validation using validateOrThrow
    */
   async ingestContent(request: IngestionRequest): Promise<IngestionResponse> {
     const id = randomUUID();
@@ -23,41 +24,16 @@ export class IngestionService {
     logger.info('Starting content ingestion');
 
     try {
-      // Validate the content
-      const validation = ContentValidator.validateContent(request.content);
+      // Validate the content using validateOrThrow (throws ValidationError on failure)
+      const validatedContent = ContentValidator.validateContent(request.content);
       
-      if (!validation.success) {
-        const response: IngestionResponse = {
-          id,
-          status: INGESTION_STATUS.FAILED,
-          timestamp,
-          message: validation.error,
-          errors: validation.details
-        };
-
-        // Store failed record
-        this.records.set(id, {
-          id,
-          content: request.content,
-          contentType: this.determineContentType(request.content),
-          status: INGESTION_STATUS.FAILED,
-          createdAt: timestamp,
-          updatedAt: timestamp,
-          metadata: request.metadata,
-          errors: validation.details
-        });
-
-        logger.warn('Content ingestion failed');
-        return response;
-      }
-
       // Determine content type from validated data
-      const contentType = this.determineContentType(validation.data);
+      const contentType = this.determineContentType(validatedContent);
 
       // Create successful record
       const record: IngestionRecord = {
         id,
-        content: validation.data,
+        content: validatedContent,
         contentType,
         status: INGESTION_STATUS.COMPLETED,
         createdAt: timestamp,
@@ -79,6 +55,34 @@ export class IngestionService {
       return response;
 
     } catch (error) {
+      // Handle ValidationError specifically
+      if (error instanceof ValidationError) {
+        logger.warn('Content validation failed');
+
+        const response: IngestionResponse = {
+          id,
+          status: INGESTION_STATUS.FAILED,
+          timestamp,
+          message: error.message,
+          errors: error.details
+        };
+
+        // Store failed record
+        this.records.set(id, {
+          id,
+          content: request.content,
+          contentType: this.determineContentType(request.content),
+          status: INGESTION_STATUS.FAILED,
+          createdAt: timestamp,
+          updatedAt: timestamp,
+          metadata: request.metadata,
+          errors: error.details
+        });
+
+        return response;
+      }
+
+      // Handle unexpected errors
       logger.error('Unexpected error during ingestion');
 
       const response: IngestionResponse = {
