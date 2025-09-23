@@ -1,0 +1,1 @@
+Read ai-workspace/planning/issue-9/phase-5-testing-documentation.md. Then read any files in ai-workspace/completion-reports/issue-9/. Produce a concise testing & documentation checklist with critical acceptance tests and documentation files to update. Create a short completion report at ai-workspace/completion-reports/issue-9/issue-9-phase-5-completion-report.md.

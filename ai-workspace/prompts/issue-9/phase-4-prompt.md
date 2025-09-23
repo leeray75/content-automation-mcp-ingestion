@@ -1,0 +1,1 @@
+Read ai-workspace/planning/issue-9/phase-4-validation-error-handling.md. Then read any files in ai-workspace/completion-reports/issue-9/. Provide a prioritized list of code changes/utilities required (e.g., validateOrThrow) and minimal tests to add. Create a short completion report at ai-workspace/completion-reports/issue-9/issue-9-phase-4-completion-report.md.
