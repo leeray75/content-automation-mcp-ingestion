@@ -13,14 +13,30 @@ export function requestIdMiddleware(
   res: Response,
   next: NextFunction
 ): void {
-  // Get request ID from header or generate new one
-  const requestId = (req.headers['x-request-id'] as string) || randomUUID();
+  // Get request ID from header (case-insensitive) or generate new one
+  let requestId: string | string[] | undefined;
+  
+  // Check for various case combinations of the header
+  for (const key of Object.keys(req.headers)) {
+    if (key.toLowerCase() === 'x-request-id') {
+      requestId = req.headers[key];
+      break;
+    }
+  }
+  
+  // Handle array headers by taking the first value
+  if (Array.isArray(requestId)) {
+    requestId = requestId[0];
+  }
+  
+  // Use existing ID or generate new one if empty/missing
+  const finalRequestId = (requestId && requestId.trim()) || randomUUID();
   
   // Set on request for downstream use
-  req.requestId = requestId;
+  req.requestId = finalRequestId;
   
   // Echo back in response headers
-  res.setHeader('x-request-id', requestId);
+  res.setHeader('x-request-id', finalRequestId);
   
   next();
 }

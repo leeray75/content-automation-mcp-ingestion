@@ -15,7 +15,7 @@ describe('IngestionService', () => {
         headline: 'Test Article',
         body: 'This is a test article body.',
         author: 'Test Author',
-        publishDate: '2025-01-01',
+        publishDate: '2025-01-01T00:00:00.000Z',
         tags: ['test', 'article']
       };
 
@@ -48,7 +48,7 @@ describe('IngestionService', () => {
         headline: 'Test Article',
         body: 'This is a test article body.',
         author: 'Test Author',
-        publishDate: '2025-01-01',
+        publishDate: '2025-01-01T00:00:00.000Z',
         tags: ['test', 'article']
       };
 
@@ -73,7 +73,7 @@ describe('IngestionService', () => {
           headline: 'Test Article',
           body: 'Test body',
           author: 'Test Author',
-          publishDate: '2025-01-01',
+          publishDate: '2025-01-01T00:00:00.000Z',
           tags: ['test']
         }
       });

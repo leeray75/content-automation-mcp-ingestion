@@ -7,10 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- [issue-9](https://github.com/leeray75/content-automation-mcp-ingestion/issues/9) - **MCP Server Prototype Support for Ingestion Workflow** - Complete dual transport implementation with enhanced validation and error handling
+- [issue-9](https://github.com/leeray75/content-automation-mcp-ingestion/issues/9) - Dual transport support: STDIO for local development, HTTP for container deployment with automatic transport selection
+- [issue-9](https://github.com/leeray75/content-automation-mcp-ingestion/issues/9) - Enhanced validation system with validateOrThrow helper and ValidationError class for consistent error handling
+- [issue-9](https://github.com/leeray75/content-automation-mcp-ingestion/issues/9) - Request correlation system with X-Request-Id headers for end-to-end request tracking and debugging
+- [issue-9](https://github.com/leeray75/content-automation-mcp-ingestion/issues/9) - Comprehensive error handling with structured HTTP responses (400 for validation errors, 500 for internal errors)
+- [issue-9](https://github.com/leeray75/content-automation-mcp-ingestion/issues/9) - Enhanced Zod schemas with improved validation rules and detailed error messages for Article, Ad, and LandingPage content types
+- [issue-9](https://github.com/leeray75/content-automation-mcp-ingestion/issues/9) - Request ID middleware for automatic UUID generation and correlation header management
+- [issue-9](https://github.com/leeray75/content-automation-mcp-ingestion/issues/9) - Standardized error handler middleware with proper error serialization and safe error envelopes
+- [issue-9](https://github.com/leeray75/content-automation-mcp-ingestion/issues/9) - Comprehensive test suite including unit tests for validation, request ID middleware, transport layer, and Issue #9 compliance tests
+- [issue-9](https://github.com/leeray75/content-automation-mcp-ingestion/issues/9) - MCP Inspector connectivity verification for both STDIO and HTTP transport modes
+- [issue-9](https://github.com/leeray75/content-automation-mcp-ingestion/issues/9) - Enhanced documentation with dual transport setup instructions, error response examples, and troubleshooting guides
+
+### Changed
+- [issue-9](https://github.com/leeray75/content-automation-mcp-ingestion/issues/9) - **Breaking**: Restored STDIO transport support alongside HTTP transport for flexible deployment options
+- [issue-9](https://github.com/leeray75/content-automation-mcp-ingestion/issues/9) - Enhanced validation system replacing ValidationResult pattern with validateOrThrow for better type safety and error propagation
+- [issue-9](https://github.com/leeray75/content-automation-mcp-ingestion/issues/9) - Improved error response format with detailed validation feedback, request correlation IDs, and timestamps
+- [issue-9](https://github.com/leeray75/content-automation-mcp-ingestion/issues/9) - Updated transport layer with proper STDIO/HTTP selection based on environment variables and Docker detection
+- [issue-9](https://github.com/leeray75/content-automation-mcp-ingestion/issues/9) - Enhanced middleware architecture with request ID generation and standardized error handling
+- [issue-9](https://github.com/leeray75/content-automation-mcp-ingestion/issues/9) - Improved CORS configuration to include X-Request-Id in allowed and exposed headers
+
 ### Fixed
 - [issue-2](https://github.com/leeray75/content-automation-stack/issues/2) - Add pino-pretty dependency to resolve logger crash in production environments
 - Resolved service crash: "unable to determine transport target for pino-pretty" by adding missing dependency
 - Fixed Docker container restart loop caused by missing logging dependency
+- [issue-9](https://github.com/leeray75/content-automation-mcp-ingestion/issues/9) - Fixed validation error handling to provide detailed field-level feedback with proper HTTP status codes
+- [issue-9](https://github.com/leeray75/content-automation-mcp-ingestion/issues/9) - Resolved request correlation issues ensuring X-Request-Id headers are properly echoed in all responses
+- [issue-9](https://github.com/leeray75/content-automation-mcp-ingestion/issues/9) - Fixed transport initialization to properly handle both STDIO and HTTP modes with environment-based selection
 
 ## [0.3.0] - 2025-09-21
 ### Changed
