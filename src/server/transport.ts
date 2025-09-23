@@ -6,6 +6,8 @@ import { logger } from '../utils/logger.js';
 import { DEFAULT_PORT } from '../utils/constants.js';
 import bearerAuthMiddleware from './middleware/auth.js';
 import { getAuthConfig } from './middleware/auth/index.js';
+import { requestIdMiddleware } from './middleware/request-id.js';
+import { errorHandler } from './middleware/error-handler.js';
 import { globalEventQueue } from './eventQueue.js';
 import { randomUUID } from 'crypto';
 import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js';
@@ -69,7 +71,10 @@ export class TransportManager {
     
     this.app = express();
     
-    // Middleware
+    // Request ID middleware (first to ensure all requests have correlation ID)
+    this.app.use(requestIdMiddleware);
+    
+    // Basic middleware
     this.app.use(express.json({ limit: '10mb' }));
     this.app.use(express.urlencoded({ extended: true }));
     
@@ -77,8 +82,8 @@ export class TransportManager {
     this.app.use((req, res, next) => {
       res.header('Access-Control-Allow-Origin', '*');
       res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-      res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-      res.header('Access-Control-Expose-Headers', 'mcp-session-id');
+      res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Request-Id');
+      res.header('Access-Control-Expose-Headers', 'mcp-session-id, x-request-id');
       
       if (req.method === 'OPTIONS') {
         res.sendStatus(200);
@@ -324,6 +329,9 @@ export class TransportManager {
         });
       }
     });
+
+    // Error handling middleware (must be last)
+    this.app.use(errorHandler);
 
     // Start HTTP server
     this.httpServer = this.app.listen(port, () => {
