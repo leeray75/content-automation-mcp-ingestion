@@ -1,5 +1,6 @@
 import express from 'express';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { MCPServer } from './mcp-server.js';
 import { logger } from '../utils/logger.js';
 import { DEFAULT_PORT } from '../utils/constants.js';
@@ -22,7 +23,7 @@ export class TransportManager {
    * Start transport based on environment
    */
   async start() {
-    const transport = process.env.TRANSPORT || 'http';
+    const transport = process.env.TRANSPORT || 'stdio'; // Default to stdio for local development
     
     // Explicitly reject stdio in Docker containers
     if (transport.toLowerCase() === 'stdio' && process.env.IN_DOCKER === 'true') {
@@ -32,13 +33,30 @@ export class TransportManager {
     }
     
     switch (transport.toLowerCase()) {
+      case 'stdio':
+        await this.startStdioTransport();
+        break;
       case 'http':
         await this.startHttpTransport();
         break;
       default:
-        logger.error(`Unsupported transport: ${transport}. Only 'http' is supported.`);
+        logger.error(`Unsupported transport: ${transport}. Supported: 'stdio', 'http'`);
         throw new Error(`Unsupported transport: ${transport}`);
     }
+  }
+
+  /**
+   * Start STDIO transport for local development
+   */
+  private async startStdioTransport() {
+    logger.info('Starting STDIO transport');
+    
+    const transport = new StdioServerTransport();
+    await this.mcpServer.getServer().connect(transport);
+    
+    logger.info('STDIO transport connected');
+    logger.info('MCP server ready for Inspector connection');
+    logger.info('Use: npx @modelcontextprotocol/inspector node build/index.js');
   }
 
   /**
