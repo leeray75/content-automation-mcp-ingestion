@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- [issue-2](https://github.com/leeray75/content-automation-stack/issues/2) - Add pino-pretty dependency to resolve logger crash in production environments
+- Resolved service crash: "unable to determine transport target for pino-pretty" by adding missing dependency
+- Fixed Docker container restart loop caused by missing logging dependency
+
 ## [0.3.0] - 2025-09-21
 ### Changed
 - [issue-5](https://github.com/leeray75/content-automation-mcp-ingestion/issues/5) - **Breaking**: Removed SSE transport support - server now uses Streamable HTTP only
