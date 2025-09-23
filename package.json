@@ -28,6 +28,7 @@
     "express": "^4.21.0",
     "zod": "^3.23.8",
     "pino": "^9.4.0",
+    "pino-pretty": "^11.2.2",
     "dotenv": "^16.4.5",
     "jsonwebtoken": "^9.0.2",
     "content-automation-schemas": "file:../content-automation-schemas"
